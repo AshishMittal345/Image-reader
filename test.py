@@ -55,16 +55,17 @@ bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)  # Set crossCheck to Fals
 
 @app.route("/upload", methods=["POST"])
 def upload_image():
-    if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
+    # Read raw binary data from the request body
+    binary_data = request.data
+    if not binary_data:
+        return jsonify({"error": "No binary data provided"}), 400
 
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-
-    # Read uploaded image
-    npimg = np.frombuffer(file.read(), np.uint8)
+    # Convert binary data to a NumPy array
+    npimg = np.frombuffer(binary_data, np.uint8)
     uploaded_image = cv2.imdecode(npimg, cv2.IMREAD_GRAYSCALE)
+
+    if uploaded_image is None:
+        return jsonify({"error": "Invalid image data"}), 400
 
     # Extract features from the uploaded image
     keypoints, descriptors = orb.detectAndCompute(uploaded_image, None)
