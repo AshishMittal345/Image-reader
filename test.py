@@ -107,8 +107,7 @@ def upload_image():
     for data in matched_images.values():
         for _ in range(data["count"]):
             result_list.append({
-                "matched_image": data["matched_image"],
-                "name": data["name"],
+                 "name": data["name"],
                 "card_size": data["card_size"]
             })
 
